@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using webapi_demo.Models;
-
 namespace webapi_demo.Data;
 
 public class ToDoDbContext : DbContext

@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-
 namespace webapi_demo.CustomMiddleware;
 
 public class LoggingMiddleware
