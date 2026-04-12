@@ -1,0 +1,53 @@
+@webapi_demo_HostAddress = http://localhost:5237
+
+### Get all Todos
+GET {{webapi_demo_HostAddress}}/api/Todo/
+Accept: application/json
+
+### Create a new Todo
+# @prompt title Item Title
+# @prompt completed Item complete status (true | false)
+POST {{webapi_demo_HostAddress}}/api/Todo HTTP/1.1
+Content-Type: application/json
+
+{
+    "title": "{{title}}",
+    "isComplete": {{completed}}
+}
+
+### Get Todo by Id
+# @prompt itemId Todo item id to get
+GET {{webapi_demo_HostAddress}}/api/Todo/{{itemId}}
+Accept: application/json
+
+### Update Todo
+# @prompt itemId Item Id
+# @prompt title Item Title
+# @prompt completed Item complete status (true | false)
+PUT {{webapi_demo_HostAddress}}/api/Todo/{{itemId}}
+Content-Type: application/json
+
+{
+    "title": "{{title}}",
+    "isComplete": {{completed}}
+}
+
+### Delete Todo by Id
+# @prompt itemId Todo item id to delete
+DELETE {{webapi_demo_HostAddress}}/api/Todo/{{itemId}}
+Accept: application/json
+
+### Patch Todo
+# @prompt itemId Todo item id to patch
+# @prompt field Todo item field
+# @prompt value Todo item field value
+PATCH {{webapi_demo_HostAddress}}/api/Todo/{{itemId}}
+Content-Type: application/json
+
+[
+    {
+        "op":    "replace",
+        "path":  "/{{field}}",
+        "value": {{value}}
+    }
+]
