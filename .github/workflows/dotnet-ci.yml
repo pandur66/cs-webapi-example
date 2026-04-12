@@ -13,7 +13,6 @@ on:
 
 permissions:
   contents: read
-  id-token: write
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -71,7 +70,9 @@ jobs:
         run: curl -fsSL https://cli.deepsource.com/install | BINDIR=./bin sh
 
       - name: Report coverage to DeepSource
-        run: ./bin/deepsource report --analyzer test-coverage --key csharp --value-file "$COVERAGE_FILE" --use-oidc
+        run: ./bin/deepsource report --analyzer test-coverage --key csharp --value-file "$COVERAGE_FILE"
+        env:
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}
 
       - name: Publish application
         run: dotnet publish webapi-demo.csproj --configuration Release --no-build --output ./publish
