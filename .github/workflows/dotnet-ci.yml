@@ -56,6 +56,7 @@ jobs:
             --results-directory ./TestResults
 
       - name: Find coverage report
+        id: find-coverage
         shell: bash
         run: |
           coverage_file=$(find "$PWD/TestResults" -name "coverage.cobertura.xml" | head -n 1)
@@ -67,6 +68,13 @@ jobs:
 
           echo "COVERAGE_FILE=$coverage_file" >> "$GITHUB_ENV"
 
+      - name: Upload coverage report as artifact
+        uses: actions/upload-artifact@v7
+        if: steps.find-coverage.outcome == 'success'
+        with:
+          name: webapi-demo-coverage
+          path: ${{ env.COVERAGE_FILE }}
+
       - name: Install DeepSource CLI
         run: curl -fsSL https://cli.deepsource.com/install | BINDIR=./bin sh
 
@@ -77,12 +85,6 @@ jobs:
 
       - name: Publish application
         run: dotnet publish webapi-demo.csproj --configuration Release --no-build --output ./publish
-
-      - name: Upload published artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: webapi-demo-publish
-          path: ./publish
 
   build-docker-image:
     runs-on: ubuntu-latest
