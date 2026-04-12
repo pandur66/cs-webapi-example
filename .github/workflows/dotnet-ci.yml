@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -26,6 +27,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -36,28 +39,39 @@ jobs:
             webapi-demo.csproj
             global.json
             NuGet.Config
+            tests/webapi-demo.Tests/webapi-demo.Tests.csproj
 
       - name: Restore dependencies
-        run: dotnet restore webapi-demo.csproj
+        run: dotnet restore webapi-demo.sln
 
       - name: Build
-        run: dotnet build webapi-demo.csproj --configuration Release --no-restore
+        run: dotnet build webapi-demo.sln --configuration Release --no-restore
 
-      - name: Test
+      - name: Test with coverage
+        run: |
+          dotnet test webapi-demo.sln \
+            --configuration Release \
+            --no-build \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults
+
+      - name: Find coverage report
         shell: bash
         run: |
-          shopt -s globstar nullglob
-          test_projects=(**/*Tests.csproj **/*Test.csproj)
+          coverage_file=$(find "$PWD/TestResults" -name "coverage.cobertura.xml" | head -n 1)
 
-          if [ ${#test_projects[@]} -eq 0 ]; then
-            echo "No test projects found. Skipping tests."
-            exit 0
+          if [ -z "$coverage_file" ]; then
+            echo "Coverage report not found."
+            exit 1
           fi
 
-          for project in "${test_projects[@]}"; do
-            echo "Running tests for $project"
-            dotnet test "$project" --configuration Release --no-build --verbosity normal
-          done
+          echo "COVERAGE_FILE=$coverage_file" >> "$GITHUB_ENV"
+
+      - name: Install DeepSource CLI
+        run: curl -fsSL https://cli.deepsource.com/install | BINDIR=./bin sh
+
+      - name: Report coverage to DeepSource
+        run: ./bin/deepsource report --analyzer test-coverage --key csharp --value-file "$COVERAGE_FILE" --use-oidc
 
       - name: Publish application
         run: dotnet publish webapi-demo.csproj --configuration Release --no-build --output ./publish
