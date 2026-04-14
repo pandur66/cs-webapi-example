@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using webapi_demo.CustomMiddleware;
 using webapi_demo.Data;
 using webapi_demo.Interfaces;
@@ -25,6 +26,7 @@ app.UseMiddleware<LoggingMiddleware>();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
