@@ -9,8 +9,8 @@ namespace webapi_demo.Tests;
 
 public class ToDoServiceTests : IDisposable
 {
-  private readonly ToDoDbContext _context;
-  private readonly ToDoService _service;
+    private readonly ToDoDbContext _context;
+    private readonly ToDoService _service;
 
     public ToDoServiceTests()
     {
@@ -18,11 +18,12 @@ public class ToDoServiceTests : IDisposable
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-      _context = new ToDoDbContext(options);
-      _service = new ToDoService(_context);
+        _context = new ToDoDbContext(options);
+        _service = new ToDoService(_context);
     }
 
-    public void Dispose() {
+    public void Dispose()
+    {
         _context.Dispose();
     }
 
@@ -38,14 +39,14 @@ public class ToDoServiceTests : IDisposable
     [Fact]
     public async Task GetAllAsync_ReturnsAllItems_WhenItemsExist()
     {
-      var ct = TestContext.Current.CancellationToken;
+        var ct = TestContext.Current.CancellationToken;
         _context.ToDoItems.AddRange(
-          new ToDoItem{Title="First",IsComplete=false},
+          new ToDoItem { Title = "First", IsComplete = false },
             new ToDoItem { Title = "Second", IsComplete = true }
         );
         await _context.SaveChangesAsync(ct);
         var result = await _service.GetAllAsync();
-        Assert.Equal(2,result.Count());
+        Assert.Equal(2, result.Count());
     }
 
     // GetByIdAsync
@@ -61,15 +62,15 @@ public class ToDoServiceTests : IDisposable
         var result = await _service.GetByIdAsync(item.Id);
 
         Assert.NotNull(result);
-        Assert.Equal("Find me",result.Title);
+        Assert.Equal("Find me", result.Title);
         Assert.False(result.IsComplete);
     }
 
     [Fact]
     public async Task GetByIdAsync_ReturnsNull_WhenItemDoesNotExist()
     {
-      var result = await _service.GetByIdAsync(999);
-      Assert.Null(result);
+        var result = await _service.GetByIdAsync(999);
+        Assert.Null(result);
     }
 
     // AddAsync
@@ -77,10 +78,10 @@ public class ToDoServiceTests : IDisposable
     [Fact]
     public async Task AddAsync_ReturnsAddedItem()
     {
-        var newItem = new ToDoItem {Title="New Task",IsComplete=false};
+        var newItem = new ToDoItem { Title = "New Task", IsComplete = false };
         var result = await _service.AddAsync(newItem);
-        Assert.NotNull( result );
-        Assert.Equal("New Task",result.Title);
+        Assert.NotNull(result);
+        Assert.Equal("New Task", result.Title);
         Assert.False(result.IsComplete);
     }
 
@@ -90,10 +91,10 @@ public class ToDoServiceTests : IDisposable
         var ct = TestContext.Current.CancellationToken;
         var newItem = new ToDoItem { Title = "Persisted Task", IsComplete = true };
 
-        var result = await _service.AddAsync( newItem );
+        var result = await _service.AddAsync(newItem);
 
-        Assert.True(result.Id>0);
-        Assert.Equal(1,await _context.ToDoItems.CountAsync(ct));
+        Assert.True(result.Id > 0);
+        Assert.Equal(1, await _context.ToDoItems.CountAsync(ct));
     }
 
     // UpdateAsync
@@ -101,20 +102,20 @@ public class ToDoServiceTests : IDisposable
     [Fact]
     public async Task UpdateAsync_ReturnsNull_WhenItemDoesNotExist()
     {
-        var result = await _service.UpdateAsync(999,new ToDoItem{Title="Updated",IsComplete=true});
+        var result = await _service.UpdateAsync(999, new ToDoItem { Title = "Updated", IsComplete = true });
         Assert.Null(result);
     }
 
     [Fact]
     public async Task UpdateAsync_ReturnsUpdatedItem_WhenItemExists()
     {
-      var ct = TestContext.Current.CancellationToken;
-      var item = new ToDoItem { Title = "Original", IsComplete = false };
-      _context.ToDoItems.Add(item);
-      await _context.SaveChangesAsync(ct);
-        var result = await _service.UpdateAsync(item.Id,new ToDoItem{Title="Updated",IsComplete=true});
+        var ct = TestContext.Current.CancellationToken;
+        var item = new ToDoItem { Title = "Original", IsComplete = false };
+        _context.ToDoItems.Add(item);
+        await _context.SaveChangesAsync(ct);
+        var result = await _service.UpdateAsync(item.Id, new ToDoItem { Title = "Updated", IsComplete = true });
         Assert.NotNull(result);
-        Assert.Equal( "Updated", result.Title );
+        Assert.Equal("Updated", result.Title);
         Assert.True(result.IsComplete);
     }
 
@@ -128,8 +129,8 @@ public class ToDoServiceTests : IDisposable
 
         await _service.UpdateAsync(item.Id, new ToDoItem { Title = "Persisted", IsComplete = true });
 
-        var fromDb = await _context.ToDoItems.FindAsync([item.Id],ct);
-        Assert.Equal("Persisted",fromDb!.Title);
+        var fromDb = await _context.ToDoItems.FindAsync([item.Id], ct);
+        Assert.Equal("Persisted", fromDb!.Title);
         Assert.True(fromDb.IsComplete);
     }
 
@@ -151,7 +152,7 @@ public class ToDoServiceTests : IDisposable
         await _context.SaveChangesAsync(ct);
         var result = await _service.DeleteAsync(item.Id);
         Assert.NotNull(result);
-        Assert.Equal("To Delete",result.Title);
+        Assert.Equal("To Delete", result.Title);
     }
 
     [Fact]
@@ -164,7 +165,7 @@ public class ToDoServiceTests : IDisposable
 
         await _service.DeleteAsync(item.Id);
 
-        Assert.Equal(0,await _context.ToDoItems.CountAsync(ct));
+        Assert.Equal(0, await _context.ToDoItems.CountAsync(ct));
     }
 
     // PatchAsync
@@ -174,16 +175,16 @@ public class ToDoServiceTests : IDisposable
     {
         var ct = TestContext.Current.CancellationToken;
         var patchDoc = new JsonPatchDocument<ToDoItem>();
-        patchDoc.Replace(t=>t.Title,"Patched");
-        await _service.PatchAsync(999,patchDoc);
-        Assert.Equal(0,await _context.ToDoItems.CountAsync(ct));
+        patchDoc.Replace(t => t.Title, "Patched");
+        await _service.PatchAsync(999, patchDoc);
+        Assert.Equal(0, await _context.ToDoItems.CountAsync(ct));
     }
 
     [Fact]
     public async Task PatchAsync_AppliesTitle_WhenItemExists()
     {
         var ct = TestContext.Current.CancellationToken;
-        var item = new ToDoItem{Title="Original",IsComplete=false};
+        var item = new ToDoItem { Title = "Original", IsComplete = false };
         _context.ToDoItems.Add(item);
         await _context.SaveChangesAsync(ct);
 
@@ -193,7 +194,7 @@ public class ToDoServiceTests : IDisposable
         await _service.PatchAsync(item.Id, patchDoc);
 
         var fromDb = await _context.ToDoItems.FindAsync([item.Id], ct);
-        Assert.Equal("Patched",fromDb!.Title);
+        Assert.Equal("Patched", fromDb!.Title);
     }
 
     [Fact]
@@ -204,9 +205,9 @@ public class ToDoServiceTests : IDisposable
         _context.ToDoItems.Add(item);
         await _context.SaveChangesAsync(ct);
         var patchDoc = new JsonPatchDocument<ToDoItem>();
-        patchDoc.Replace(t=>t.IsComplete,true);
-        await _service.PatchAsync(item.Id,patchDoc);
-        var fromDb = await _context.ToDoItems.FindAsync([item.Id],ct);
+        patchDoc.Replace(t => t.IsComplete, true);
+        await _service.PatchAsync(item.Id, patchDoc);
+        var fromDb = await _context.ToDoItems.FindAsync([item.Id], ct);
         Assert.True(fromDb!.IsComplete);
     }
 }
