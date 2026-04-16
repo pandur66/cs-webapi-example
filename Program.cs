@@ -5,7 +5,7 @@ using webapi_demo.Data;
 using webapi_demo.Interfaces;
 using webapi_demo.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+    var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
