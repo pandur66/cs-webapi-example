@@ -6,7 +6,7 @@ using WebApiDemo.Domain.Entities;
 using WebApiDemo.WebAPI.Controllers;
 using Xunit;
 
-namespace webapi_demo.Tests;
+namespace WebApiDemo.Tests.WebAPI;
 
 public class TodoControllerTests
 {

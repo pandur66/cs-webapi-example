@@ -10,7 +10,7 @@ ASP.NET Core Web API built with `.NET 10` and `SQLite`.
 ## Run Locally
 
 ```bash
-dotnet restore
+dotnet restore webapi-demo.slnx
 dotnet run --project src/WebApiDemo.WebAPI/WebApiDemo.WebAPI.csproj
 ```
 
