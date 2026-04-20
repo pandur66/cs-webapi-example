@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 using webapi_demo.Data;
 using webapi_demo.Models;
 using webapi_demo.Services;
@@ -19,7 +20,7 @@ public class ToDoServiceTests : IDisposable
             .Options;
 
         _context = new ToDoDbContext(options);
-        _service = new ToDoService(_context);
+        _service = new ToDoService(_context, NullLogger<ToDoService>.Instance);
     }
 
     public void Dispose()

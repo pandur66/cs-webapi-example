@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using webapi_demo.CustomMiddleware;
 using webapi_demo.Data;
 using webapi_demo.Interfaces;
 using webapi_demo.Services;
@@ -19,8 +18,6 @@ builder.Services
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
-
-app.UseMiddleware<LoggingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
