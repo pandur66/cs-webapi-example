@@ -7,7 +7,7 @@ using WebApiDemo.Infrastructure.Persistence;
 using WebApiDemo.Infrastructure.Repositories;
 using Xunit;
 
-namespace webapi_demo.Tests;
+namespace WebApiDemo.Tests.Application;
 
 public class ToDoServiceTests : IDisposable
 {

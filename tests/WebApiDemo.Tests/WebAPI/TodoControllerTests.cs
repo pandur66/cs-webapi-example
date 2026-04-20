@@ -6,7 +6,7 @@ using WebApiDemo.Domain.Entities;
 using WebApiDemo.WebAPI.Controllers;
 using Xunit;
 
-namespace webapi_demo.Tests;
+namespace WebApiDemo.Tests.WebAPI;
 
 public class TodoControllerTests
 {
@@ -46,6 +46,24 @@ public class TodoControllerTests
         Assert.Equal(2, mappedItems.Count);
         Assert.Equal("First", mappedItems[0].Title);
         Assert.True(mappedItems[1].IsComplete);
+    }
+
+    [Fact]
+    public async Task GetToDoItemById_ReturnsOk_WhenItemExists()
+    {
+        var service = new FakeToDoService
+        {
+            GetByIdResult = new ToDoItem { Id = 1, Title = "Found", IsComplete = true }
+        };
+        var controller = new TodoController(service);
+
+        var result = await controller.GetToDoItemById(1);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var dto = Assert.IsType<ToDoItemDTO>(okResult.Value);
+        Assert.Equal(1, dto.Id);
+        Assert.Equal("Found", dto.Title);
+        Assert.True(dto.IsComplete);
     }
 
     [Fact]
@@ -91,12 +109,51 @@ public class TodoControllerTests
     }
 
     [Fact]
+    public async Task UpdateToDoItem_ReturnsOk_WhenItemExists()
+    {
+        var service = new FakeToDoService
+        {
+            UpdateResult = new ToDoItem { Id = 5, Title = "Updated", IsComplete = true }
+        };
+        var controller = new TodoController(service);
+        var dto = new ToDoItemDTO { Title = "Updated", IsComplete = true };
+
+        var result = await controller.UpdateToDoItem(5, dto);
+
+        var okResult = Assert.IsType<OkObjectResult>(result);
+        var returnedDto = Assert.IsType<ToDoItemDTO>(okResult.Value);
+        Assert.Equal(5, returnedDto.Id);
+        Assert.Equal("Updated", returnedDto.Title);
+    }
+
+    [Fact]
     public async Task UpdateToDoItem_ReturnsNotFound_WhenServiceReturnsNull()
     {
         var controller = new TodoController(new FakeToDoService());
         var dto = new ToDoItemDTO { Title = "Updated", IsComplete = false };
 
         var result = await controller.UpdateToDoItem(15, dto);
+
+        Assert.IsType<NotFoundResult>(result);
+    }
+
+    [Fact]
+    public async Task UpdateToDoItem_ReturnsBadRequest_WhenModelStateIsInvalid()
+    {
+        var controller = new TodoController(new FakeToDoService());
+        controller.ModelState.AddModelError("Title", "Title is required");
+
+        var result = await controller.UpdateToDoItem(1, new ToDoItemDTO());
+
+        Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task DeleteToDoItem_ReturnsNotFound_WhenItemDoesNotExist()
+    {
+        var controller = new TodoController(new FakeToDoService());
+
+        var result = await controller.DeleteToDoItem(99);
 
         Assert.IsType<NotFoundResult>(result);
     }

@@ -48,7 +48,9 @@ src/
   WebApiDemo.Infrastructure/  → EF Core DbContext, repository implementations, Migrations
   WebApiDemo.WebAPI/          → Controllers, Program.cs (DI wiring)
 tests/
-  webapi-demo.Tests/          → xUnit 3 unit tests
+  WebApiDemo.Tests/
+    Application/              → ToDoService integration tests (Application + Infrastructure)
+    WebAPI/                   → TodoController unit tests
 ```
 
 **Dependency rule:** Domain has no external references. Application references Domain only. Infrastructure references Domain. WebAPI references Application and Infrastructure (only for DI wiring in `Program.cs`).
@@ -61,7 +63,7 @@ tests/
 - OpenAPI UI served via Scalar at `/scalar/v1`
 - Logging via `ILogger<T>` injected into `ToDoService`; write-operations log at `Information`, not-found cases at `Warning`
 
-**Testing:** xUnit 3 with Coverlet for coverage. Tests live in `tests/webapi-demo.Tests/`. `ToDoServiceTests` constructs `ToDoRepository` + `ToDoService` directly against an in-memory EF Core database. Code coverage config is in `coverlet.runsettings`.
+**Testing:** xUnit 3 with Coverlet for coverage. Tests live in `tests/WebApiDemo.Tests/`. `ToDoServiceTests` constructs `ToDoRepository` + `ToDoService` directly against an in-memory EF Core database. Code coverage config is in `coverlet.runsettings`.
 
 **Lock files:** All projects have `RestorePackagesWithLockFile` enabled. The CI restore runs with `--locked-mode`. Commit `packages.lock.json` changes whenever dependencies change.
 

@@ -38,7 +38,7 @@ jobs:
             src/WebApiDemo.WebAPI/WebApiDemo.WebAPI.csproj
             global.json
             NuGet.Config
-            tests/webapi-demo.Tests/webapi-demo.Tests.csproj
+            tests/WebApiDemo.Tests/WebApiDemo.Tests.csproj
 
       - name: Restore dependencies
         run: dotnet restore webapi-demo.slnx --locked-mode
